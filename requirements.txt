@@ -2,8 +2,7 @@ backports.weakref
 enum34
 numpy
 pandas
-pyarrow==0.9.0;python_version<"3.5"
-pyarrow>=0.9.0,<0.14.0;python_version>="3.5"
+pyarrow==0.16.0
 pycodestyle
 pytest
 requests
