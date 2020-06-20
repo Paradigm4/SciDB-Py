@@ -4,6 +4,9 @@ SciDB-Py: Python Interface to SciDB
 .. image:: https://img.shields.io/badge/SciDB-19.11-blue.svg
     :target: https://forum.paradigm4.com/t/scidb-release-19-11/2411
 
+.. image:: https://img.shields.io/badge/arrow-0.16.0-blue.svg
+    :target: https://arrow.apache.org/release/0.16.0.html
+
 .. image:: https://travis-ci.org/Paradigm4/SciDB-Py.svg
     :target: https://travis-ci.org/Paradigm4/SciDB-Py
 
