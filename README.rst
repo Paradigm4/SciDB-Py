@@ -51,9 +51,9 @@ supported.
 Requirements
 ------------
 
-SciDB ``16.9`` or newer with Shim
+SciDB ``19.11`` or newer with Shim
 
-Python ``2.7.x``, ``3.4.x``, ``3.5.x``, ``3.6.x``, ``3.7.x``, or newer.
+Python ``2.7.x``, ``3.5.x``, ``3.6.x``, ``3.7.x``, ``3.8.x``, or newer.
 
 Required Python packages::
 
