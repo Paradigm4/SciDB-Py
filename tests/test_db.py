@@ -1167,7 +1167,7 @@ class TestUpload:
         assert type(
             db.input('<foo:string not null>[i]',
                      upload_data=data.to_records(index=False)).store(
-                         'foo')) == Array)
+                         'foo') == Array)
         db.remove('foo')
 
 
