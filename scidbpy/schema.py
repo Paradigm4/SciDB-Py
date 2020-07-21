@@ -269,9 +269,10 @@ class Attribute(object):
     def tobytes(self, val):
         if self.dtype_val == numpy.object:
             if self.type_name == 'string':
+                val_enc = val.encode('utf-8')
                 buf = b''.join(
-                    [struct.pack(Attribute._length_fmt, len(val.encode()) + 1),
-                     val.encode(),
+                    [struct.pack(Attribute._length_fmt, len(val_enc) + 1),
+                     val_enc,
                      b'\x00'])
             elif self.type_name == 'binary':
                 buf = b''.join(
