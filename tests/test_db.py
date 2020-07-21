@@ -1162,6 +1162,14 @@ class TestUpload:
             db.load('foo', '/tmp/foo') == Array)
         db.remove('foo')
 
+    def test_load_non_ascii(self, db):
+        data = pandas.DataFrame({'foo': ['µbar']})
+        assert type(
+            db.input('<foo:string not null>[i]',
+                     upload_data=data.to_records(index=False)).store(
+                         'foo')) == Array)
+        db.remove('foo')
+
 
 class TestCreate:
 

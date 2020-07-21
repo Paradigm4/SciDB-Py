@@ -270,7 +270,7 @@ class Attribute(object):
         if self.dtype_val == numpy.object:
             if self.type_name == 'string':
                 buf = b''.join(
-                    [struct.pack(Attribute._length_fmt, len(val) + 1),
+                    [struct.pack(Attribute._length_fmt, len(val.encode()) + 1),
                      val.encode(),
                      b'\x00'])
             elif self.type_name == 'binary':
