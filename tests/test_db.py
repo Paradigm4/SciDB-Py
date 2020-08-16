@@ -84,6 +84,40 @@ class TestDB:
 
     @pytest.mark.parametrize(('type_name', 'schema'), [
         (type_name, schema)
+        for type_name in ['datetime', 'datetimetz']
+        for schema in [
+                None,
+                'build<val:{}>[i=1:10,10,0]'.format(type_name),
+                '<val:{}>[i=1:10,10,0]'.format(type_name),
+                '<val:{}>[i=1:10]'.format(type_name),
+                '<val:{}>[i]'.format(type_name),
+        ]
+    ])
+    @pytest.mark.parametrize('atts_only', [
+        True,
+        False,
+    ])
+    def test_fetch_numpy_datetime(self, db, type_name, atts_only, schema):
+        # NumPy array
+        type_conv = 'datetime(i)'
+        ar = iquery(
+            db,
+            'build(<val:{}>[i=1:10,10,0], {})'.format(
+                type_name,
+                type_conv if type_name == 'datetime'
+                else 'apply_offset({}, 0)'.format(type_conv)),
+            fetch=True,
+            atts_only=atts_only,
+            as_dataframe=False,
+            schema=schema)
+        if not atts_only:
+            for i in range(10):
+                assert ar[i][0] == i + 1
+        assert ar.shape == (10,)
+        assert ar.ndim == 1
+
+    @pytest.mark.parametrize(('type_name', 'schema'), [
+        (type_name, schema)
         for type_name in [
                 '{}int{}'.format(pre, sz)
                 for pre in ('', 'u')
@@ -139,6 +173,57 @@ class TestDB:
         ar = iquery(
             db,
             'build(<val:{}>[i=1:10,10,0], random())'.format(type_name),
+            fetch=True,
+            atts_only=True,
+            schema=schema)
+        assert ar.shape == (10, 1)
+        assert ar.ndim == 2
+
+    @pytest.mark.parametrize(('type_name', 'schema'), [
+        (type_name, schema)
+        for type_name in ['datetime', 'datetimetz']
+        for schema in [
+                None,
+                'build<val:{}>[i=1:10,10,0]'.format(type_name),
+                '<val:{}>[i=1:10,10,0]'.format(type_name),
+                '<val:{}>[i=1:10]'.format(type_name),
+                '<val:{}>[i]'.format(type_name),
+        ]
+    ])
+    def test_fetch_dataframe_datetime(self, db, type_name, schema):
+        # Pandas DataFrame
+        type_conv = 'datetime(i)'
+        ar = iquery(
+            db,
+            'build(<val:{}>[i=1:10,10,0], {})'.format(
+                type_name,
+                type_conv if type_name == 'datetime'
+                else 'apply_offset({}, 0)'.format(type_conv)),
+            fetch=True,
+            schema=schema)
+        assert ar.shape == (10, 2)
+        assert ar.ndim == 2
+
+    @pytest.mark.parametrize(('type_name', 'schema'), [
+        (type_name, schema)
+        for type_name in ['datetime', 'datetimetz']
+        for schema in [
+                None,
+                'build<val:{}>[i=1:10,10,0]'.format(type_name),
+                '<val:{}>[i=1:10,10,0]'.format(type_name),
+                '<val:{}>[i=1:10]'.format(type_name),
+                '<val:{}>[i]'.format(type_name),
+        ]
+    ])
+    def test_fetch_dataframe_atts_datetime(self, db, type_name, schema):
+        # Pandas DataFrame
+        type_conv = 'datetime(i)'
+        ar = iquery(
+            db,
+            'build(<val:{}>[i=1:10,10,0], {})'.format(
+                type_name,
+                type_conv if type_name == 'datetime'
+                else 'apply_offset({}, 0)'.format(type_conv)),
             fetch=True,
             atts_only=True,
             schema=schema)
