@@ -5,6 +5,7 @@ Classes for accessing SciDB data and schemas.
 
 """
 
+import dateutil
 import itertools
 import numpy
 import pandas
@@ -98,6 +99,8 @@ type_map_promo = dict(
         ('uint16', numpy.float32),
         ('uint32', numpy.float64),
         ('uint64', numpy.float64),
+
+        ('datetime', 'datetime64[ns]'),
     ])
 
 one_att_name = 'x'
@@ -748,12 +751,27 @@ class Schema(object):
         self._promo_warning()
         for a in self.atts:
             if not a.not_null:
-                data[a.name] = pandas.Series(
-                    data=[attr[1] if attr[0] == 255 else numpy.NAN
-                          for attr in data[a.name]],
-                    dtype=type_map_promo.get(
-                        a.type_name, type_map_numpy.get(
-                            a.type_name, numpy.object)))
+                if a.type_name == 'datetimetz':
+                    # Special case to promote SciDB datetimetz to Pandas
+                    type_name = 'datetime'
+                    data[a.name] = pandas.Series(
+                        data=[pandas.Timestamp(attr[1][0],
+                                               # Cnvert UTC offset to timezone
+                                               tz=dateutil.tz.tzoffset(
+                                                   None, offset=attr[1][1]))
+                              if attr[0] == 255 else numpy.NAN
+                              for attr in data[a.name]],
+                        dtype=type_map_promo.get(
+                            type_name, type_map_numpy.get(
+                                type_name, numpy.object)))
+                else:
+                    # All other types
+                    data[a.name] = pandas.Series(
+                        data=[attr[1] if attr[0] == 255 else numpy.NAN
+                              for attr in data[a.name]],
+                        dtype=type_map_promo.get(
+                            a.type_name, type_map_numpy.get(
+                                a.type_name, numpy.object)))
 
     def frombytes(self, buf, as_dataframe=False, dataframe_promo=True):
         # Scan content and build (offset, size) metadata
