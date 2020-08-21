@@ -53,6 +53,7 @@ def _shim_release_session(scidb_url, http_auth, verify, id):
         auth=http_auth,
         verify=verify)
     req.reason = req.content
+    req.url = _sanitize_url(req.url)
     req.raise_for_status()
 
 
@@ -557,6 +558,7 @@ no_ops            = {}'''.format(*self)
                 raise e
 
         req.reason = req.content
+        req.url = _sanitize_url(req.url)
         try:
             req.raise_for_status()
         except Exception as e:
@@ -891,6 +893,13 @@ class Operator(object):
             return Schema.fromstring(
                 self.db.iquery_readlines(
                     "show('{}', 'afl')".format(self))[0][0])
+
+
+_sanitize_url_re = re.compile('((user)|(password))=[^&]*(?=(&|$))')
+
+
+def _sanitize_url(url):
+    return _sanitize_url_re.sub('\\1=...', url)
 
 
 connect = DB
